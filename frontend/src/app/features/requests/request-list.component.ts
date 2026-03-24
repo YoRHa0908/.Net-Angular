@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { RequestItem } from '../../core/request.models';
@@ -23,7 +23,9 @@ export class RequestListComponent implements OnInit {
   filterForm = this.fb.nonNullable.group({
     status: [''],
     priority: [''],
-    titleSearch: [''],
+    deadlineFrom: [''],
+    deadlineTo: [''],
+    titleSearch: ['', [Validators.maxLength(100), Validators.pattern(/^[a-zA-Z0-9\s\-_]*$/)]],
     page: [1],
     pageSize: [10]
   });
@@ -35,12 +37,27 @@ export class RequestListComponent implements OnInit {
   }
 
   load() {
+    if (this.filterForm.invalid) {
+      this.error = 'Please fix filter input values.';
+      return;
+    }
+
     this.loading = true;
     this.error = '';
     const raw = this.filterForm.getRawValue() as Record<string, string | number>;
-    const filters: Record<string, string> = Object.fromEntries(
-      Object.entries(raw).map(([k, v]) => [k, String(v ?? '')])
-    );
+    const filters: Record<string, string> = {};
+    for (const [key, value] of Object.entries(raw)) {
+      const text = String(value ?? '').trim();
+      if (text !== '') {
+        if (key === 'deadlineFrom') {
+          filters[key] = new Date(`${text}T00:00:00`).toISOString();
+        } else if (key === 'deadlineTo') {
+          filters[key] = new Date(`${text}T23:59:59.999`).toISOString();
+        } else {
+          filters[key] = text;
+        }
+      }
+    }
     this.service.getAll(filters)
       .pipe(finalize(() => (this.loading = false)))
       .subscribe({
@@ -52,6 +69,11 @@ export class RequestListComponent implements OnInit {
         },
         error: () => (this.error = 'Failed to load requests.')
       });
+  }
+
+  applyFilters() {
+    this.filterForm.patchValue({ page: 1 });
+    this.load();
   }
 
   nextPage() {
@@ -68,5 +90,9 @@ export class RequestListComponent implements OnInit {
 
   get totalPages() {
     return Math.max(1, Math.ceil(this.totalCount / this.pageSize));
+  }
+
+  get titleSearchControl() {
+    return this.filterForm.controls.titleSearch;
   }
 }

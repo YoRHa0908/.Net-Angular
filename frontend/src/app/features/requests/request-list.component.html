@@ -3,8 +3,8 @@
   <a class="btn btn-primary" routerLink="/requests/new">Create Request</a>
 </div>
 
-<form class="row g-2 mb-3" [formGroup]="filterForm" (ngSubmit)="load()">
-  <div class="col-md-3">
+<form class="row g-2 mb-3" [formGroup]="filterForm" (ngSubmit)="applyFilters()">
+  <div class="col-md-2">
     <select class="form-select" formControlName="status">
       <option value="">All statuses</option>
       <option>Draft</option>
@@ -15,7 +15,7 @@
       <option>Cancelled</option>
     </select>
   </div>
-  <div class="col-md-3">
+  <div class="col-md-2">
     <select class="form-select" formControlName="priority">
       <option value="">All priorities</option>
       <option>Low</option>
@@ -23,11 +23,23 @@
       <option>High</option>
     </select>
   </div>
-  <div class="col-md-4">
-    <input class="form-control" formControlName="titleSearch" placeholder="Search title" />
+  <div class="col-md-2">
+    <input class="form-control" type="date" formControlName="deadlineFrom" />
   </div>
   <div class="col-md-2">
-    <button class="btn btn-outline-primary w-100" [disabled]="loading">Apply</button>
+    <input class="form-control" type="date" formControlName="deadlineTo" />
+  </div>
+  <div class="col-md-3">
+    <input class="form-control" formControlName="titleSearch" placeholder="Search title" />
+    <small class="text-danger" *ngIf="titleSearchControl.touched && titleSearchControl.errors?.['maxlength']">
+      Max 100 characters.
+    </small>
+    <small class="text-danger" *ngIf="titleSearchControl.touched && titleSearchControl.errors?.['pattern']">
+      Use letters, numbers, spaces, dash or underscore only.
+    </small>
+  </div>
+  <div class="col-md-1">
+    <button class="btn btn-outline-primary w-100" [disabled]="loading || filterForm.invalid">Apply</button>
   </div>
 </form>
 
