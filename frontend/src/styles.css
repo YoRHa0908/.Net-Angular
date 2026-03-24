@@ -89,6 +89,8 @@ h3 {
 
 .request-table {
   min-width: 780px;
+  width: 100%;
+  table-layout: fixed;
 }
 
 .table thead th {
@@ -122,6 +124,19 @@ h3 {
   min-width: 160px;
   width: 100%;
 }
+
+.title-cell {
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.request-table .col-title { width: 36%; }
+.request-table .col-status { width: 13%; }
+.request-table .col-priority { width: 12%; }
+.request-table .col-deadline { width: 17%; }
+.request-table .col-user { width: 14%; }
 
 .filter-row .form-control,
 .filter-row .form-select {
