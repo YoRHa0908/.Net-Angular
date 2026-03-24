@@ -32,4 +32,8 @@ export class RequestService {
   getHistory(id: string) {
     return this.http.get<RequestStatusHistory[]>(`${this.api}/${id}/history`);
   }
+
+  delete(id: string) {
+    return this.http.delete(`${this.api}/${id}`);
+  }
 }

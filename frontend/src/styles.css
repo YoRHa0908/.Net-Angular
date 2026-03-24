@@ -1,1 +1,116 @@
 @import "bootstrap/dist/css/bootstrap.min.css";
+
+:root {
+  --bg: #f3f6fc;
+  --card-bg: #ffffff;
+  --card-border: #e6ebf5;
+  --primary: #2563eb;
+  --primary-2: #7c3aed;
+  --text-1: #111827;
+  --text-2: #4b5563;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text-1);
+  font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+.app-navbar {
+  background: linear-gradient(90deg, #0f172a, #1e293b);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 24px rgba(17, 24, 39, 0.28);
+}
+
+.navbar-brand {
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: #f9fafb !important;
+}
+
+.user-badge {
+  color: #e5e7eb;
+  font-size: 0.9rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  padding: 0.3rem 0.65rem;
+}
+
+.app-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+
+h3 {
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  margin-bottom: 1rem;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), var(--primary-2));
+  border: none;
+  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.28);
+}
+
+.btn-primary:hover {
+  filter: brightness(1.03);
+}
+
+.btn {
+  border-radius: 10px;
+}
+
+.form-control,
+.form-select {
+  border-radius: 10px;
+  border-color: #d7dcf2;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #8ea0ff;
+  box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.2);
+}
+
+.table {
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  margin-bottom: 0;
+}
+
+.table thead th {
+  background: #f1f5ff;
+  color: #312e81;
+  border-bottom: 0;
+}
+
+.table tbody tr {
+  vertical-align: middle;
+  border-top: 1px solid #edf1f7;
+}
+
+.table tbody tr:nth-child(odd) {
+  background: #fcfdff;
+}
+
+.table tbody tr:hover {
+  background: #f6f9ff;
+}
+
+.row-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  align-items: center;
+  min-width: 160px;
+  width: 100%;
+}
+
+.alert {
+  border-radius: 12px;
+}

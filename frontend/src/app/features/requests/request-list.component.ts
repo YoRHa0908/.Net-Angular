@@ -102,6 +102,23 @@ export class RequestListComponent implements OnInit {
     this.applyFilters();
   }
 
+  deleteRequest(id: string) {
+    const confirmed = window.confirm('Delete this request?');
+    if (!confirmed) return;
+
+    this.loading = true;
+    this.service.delete(id).subscribe({
+      next: () => {
+        this.toast.success('Request deleted.');
+        this.load();
+      },
+      error: (err) => {
+        this.loading = false;
+        this.toast.httpError(err, 'Failed to delete request.');
+      }
+    });
+  }
+
   nextPage() {
     if (this.page * this.pageSize >= this.totalCount) return;
     this.filterForm.patchValue({ page: this.page + 1 });
