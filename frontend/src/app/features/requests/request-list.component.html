@@ -68,12 +68,14 @@
       <th class="col-priority">Priority</th>
       <th class="col-deadline">Deadline</th>
       <th class="col-user" *ngIf="isManager">Created By</th>
-      <th class="text-end pe-3">Actions</th>
+      <th class="col-actions text-end pe-3">Actions</th>
     </tr>
   </thead>
   <tbody>
     <tr *ngFor="let item of requests">
-      <td class="title-cell" [title]="item.title">{{ item.title }}</td>
+      <td class="title-cell" [title]="item.title">
+        <span class="title-text">{{ truncateTitle(item.title) }}</span>
+      </td>
       <td>{{ item.status }}</td>
       <td>{{ item.priority }}</td>
       <td>{{ item.deadline | date:'short' }}</td>

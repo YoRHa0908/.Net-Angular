@@ -158,4 +158,9 @@ export class RequestListComponent implements OnInit {
   get isManager() {
     return this.auth.role() === 'Manager';
   }
+
+  truncateTitle(value: string, max = 24) {
+    if (!value) return '';
+    return value.length > max ? `${value.slice(0, max)}...` : value;
+  }
 }
