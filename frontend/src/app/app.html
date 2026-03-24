@@ -3,8 +3,16 @@
   <div class="ms-auto d-flex gap-2">
     <a class="btn btn-outline-light btn-sm" routerLink="/requests">Requests</a>
     <a class="btn btn-outline-light btn-sm" routerLink="/requests/new">New</a>
-    <a class="btn btn-outline-light btn-sm" routerLink="/login">Login</a>
-    <a class="btn btn-outline-light btn-sm" routerLink="/register">Register</a>
+    <ng-container *ngIf="auth.token(); else authLinks">
+      <span class="text-light align-self-center me-2">
+        Signed in as {{ auth.email() }} ({{ auth.role() }})
+      </span>
+      <button type="button" class="btn btn-outline-light btn-sm" (click)="logout()">Logout</button>
+    </ng-container>
+    <ng-template #authLinks>
+      <a class="btn btn-outline-light btn-sm" routerLink="/login">Login</a>
+      <a class="btn btn-outline-light btn-sm" routerLink="/register">Register</a>
+    </ng-template>
   </div>
 </nav>
 <div class="container py-3">

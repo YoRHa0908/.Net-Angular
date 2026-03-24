@@ -114,12 +114,6 @@ export class RequestFormComponent implements OnInit {
     return this.auth.role() === 'Manager';
   }
 
-  setDeadline(daysFromToday: number) {
-    const d = new Date();
-    d.setDate(d.getDate() + daysFromToday);
-    this.form.patchValue({ deadline: this.toLocalDateInputValue(d.toISOString()) });
-  }
-
   private toLocalDateInputValue(value: string) {
     const date = new Date(value);
     const pad = (n: number) => String(n).padStart(2, '0');
