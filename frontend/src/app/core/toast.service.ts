@@ -40,18 +40,57 @@ export class ToastService {
 
   private extractMessage(error: unknown): string | null {
     if (!error || typeof error !== 'object') return null;
-    const maybeAny = error as any;
+    const hr = error as { error?: unknown; message?: string };
 
-    if (typeof maybeAny.error === 'string' && maybeAny.error.trim()) {
-      return maybeAny.error;
+    const fromBody = this.messageFromResponseBody(hr.error);
+    if (fromBody) return fromBody;
+
+    if (typeof hr.message === 'string' && hr.message.trim()) {
+      return hr.message.trim();
     }
 
-    if (maybeAny.error && typeof maybeAny.error.detail === 'string' && maybeAny.error.detail.trim()) {
-      return maybeAny.error.detail;
+    return null;
+  }
+
+  /** ASP.NET: plain string, string[], ValidationProblemDetails `errors`, or ProblemDetails `detail`. */
+  private messageFromResponseBody(body: unknown): string | null {
+    if (body == null) return null;
+
+    if (typeof body === 'string') {
+      const t = body.trim();
+      return t || null;
     }
 
-    if (typeof maybeAny.message === 'string' && maybeAny.message.trim()) {
-      return maybeAny.message;
+    if (Array.isArray(body)) {
+      const parts = body.map(x => String(x).trim()).filter(Boolean);
+      return parts.length ? parts.join(' ') : null;
+    }
+
+    if (typeof body !== 'object') return null;
+
+    const o = body as Record<string, unknown>;
+
+    const detail = o['detail'];
+    if (typeof detail === 'string' && detail.trim()) {
+      return detail.trim();
+    }
+
+    const errors = o['errors'];
+    if (errors && typeof errors === 'object') {
+      const msgs: string[] = [];
+      for (const v of Object.values(errors as Record<string, unknown>)) {
+        if (Array.isArray(v)) {
+          msgs.push(...v.map(x => String(x).trim()).filter(Boolean));
+        } else if (typeof v === 'string' && v.trim()) {
+          msgs.push(v.trim());
+        }
+      }
+      if (msgs.length) return msgs.join(' ');
+    }
+
+    const title = o['title'];
+    if (typeof title === 'string' && title.trim()) {
+      return title.trim();
     }
 
     return null;

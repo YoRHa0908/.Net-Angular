@@ -5,20 +5,55 @@
     <form [formGroup]="form" (ngSubmit)="submit()">
       <div class="mb-3">
         <label class="form-label">Email</label>
-        <input class="form-control" formControlName="email" type="email" />
+        <input
+          class="form-control"
+          formControlName="email"
+          type="email"
+          autocomplete="email"
+          [class.is-invalid]="form.controls.email.touched && form.controls.email.invalid"
+        />
+        <div class="invalid-feedback d-block" *ngIf="form.controls.email.touched && form.controls.email.errors?.['required']">
+          Email is required.
+        </div>
+        <div class="invalid-feedback d-block" *ngIf="form.controls.email.touched && form.controls.email.errors?.['email']">
+          Enter a valid email address.
+        </div>
+        <div class="invalid-feedback d-block" *ngIf="form.controls.email.touched && form.controls.email.errors?.['maxlength']">
+          Email must be at most 256 characters.
+        </div>
       </div>
       <div class="mb-3">
         <label class="form-label">Password</label>
-        <input class="form-control" formControlName="password" type="password" />
+        <input
+          class="form-control"
+          formControlName="password"
+          type="password"
+          autocomplete="new-password"
+          [class.is-invalid]="form.controls.password.touched && form.controls.password.invalid"
+        />
+        <div class="invalid-feedback d-block" *ngIf="form.controls.password.touched && form.controls.password.errors?.['required']">
+          Password is required.
+        </div>
+        <div class="invalid-feedback d-block" *ngIf="form.controls.password.touched && form.controls.password.errors?.['minlength']">
+          Password must be at least 6 characters.
+        </div>
+        <div class="invalid-feedback d-block" *ngIf="form.controls.password.touched && form.controls.password.errors?.['maxlength']">
+          Password must be at most 100 characters.
+        </div>
+        <small class="text-muted">Use a strong password; the server may reject passwords that do not meet security rules.</small>
       </div>
       <div class="mb-3">
         <label class="form-label">Role</label>
-        <select class="form-select" formControlName="role">
+        <select
+          class="form-select"
+          formControlName="role"
+          [class.is-invalid]="form.controls.role.touched && form.controls.role.invalid"
+        >
           <option>User</option>
           <option>Manager</option>
         </select>
       </div>
-      <button class="btn btn-primary" [disabled]="loading || form.invalid">
+      <button class="btn btn-primary" type="submit" [disabled]="loading">
         {{ loading ? 'Loading...' : 'Register' }}
       </button>
     </form>
