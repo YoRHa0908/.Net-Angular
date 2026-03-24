@@ -43,10 +43,12 @@
   </div>
 </form>
 
-<div *ngIf="error" class="alert alert-danger">{{ error }}</div>
 <div *ngIf="loading" class="alert alert-info">Loading...</div>
+<div *ngIf="!loading && !hasError && requests.length === 0" class="alert alert-secondary">
+  No results found. Try changing filters.
+</div>
 
-<table class="table table-striped" *ngIf="!loading">
+<table class="table table-striped" *ngIf="!loading && requests.length > 0">
   <thead>
     <tr>
       <th>Title</th>

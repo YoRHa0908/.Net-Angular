@@ -4,6 +4,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 import { AuthService } from '../../core/auth.service';
+import { ToastService } from '../../core/toast.service';
 
 @Component({
   standalone: true,
@@ -13,7 +14,6 @@ import { AuthService } from '../../core/auth.service';
 export class RegisterComponent {
   private readonly fb = inject(FormBuilder);
   loading = false;
-  error = '';
 
   form = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
@@ -23,18 +23,18 @@ export class RegisterComponent {
 
   constructor(
     private readonly auth: AuthService,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly toast: ToastService
   ) {}
 
   submit() {
     if (this.form.invalid) return;
     this.loading = true;
-    this.error = '';
     this.auth.register(this.form.getRawValue())
       .pipe(finalize(() => (this.loading = false)))
       .subscribe({
         next: () => this.router.navigate(['/requests']),
-        error: () => (this.error = 'Registration failed.')
+        error: (err) => this.toast.httpError(err, 'Registration failed.')
       });
   }
 }

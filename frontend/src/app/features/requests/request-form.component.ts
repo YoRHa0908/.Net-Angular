@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { finalize } from 'rxjs';
 import { RequestService } from '../../core/request.service';
 import { RequestStatus } from '../../core/request.models';
+import { ToastService } from '../../core/toast.service';
 
 @Component({
   standalone: true,
@@ -15,7 +16,6 @@ export class RequestFormComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   id: string | null = null;
   loading = false;
-  error = '';
 
   form = this.fb.nonNullable.group({
     title: ['', [Validators.required, Validators.maxLength(200)]],
@@ -28,7 +28,8 @@ export class RequestFormComponent implements OnInit {
   constructor(
     private readonly route: ActivatedRoute,
     private readonly router: Router,
-    private readonly service: RequestService
+    private readonly service: RequestService,
+    private readonly toast: ToastService
   ) {}
 
   ngOnInit() {
@@ -46,7 +47,7 @@ export class RequestFormComponent implements OnInit {
             deadline: this.toLocalDateTimeInputValue((x as any).deadline)
           });
         },
-        error: () => (this.error = 'Cannot load request.')
+        error: (err) => this.toast.httpError(err, 'Cannot load request.')
       });
   }
 
@@ -66,7 +67,7 @@ export class RequestFormComponent implements OnInit {
 
     req$.pipe(finalize(() => (this.loading = false))).subscribe({
       next: () => this.router.navigate(['/requests']),
-      error: () => (this.error = 'Save failed.')
+      error: (err) => this.toast.httpError(err, 'Save failed.')
     });
   }
 
@@ -77,7 +78,7 @@ export class RequestFormComponent implements OnInit {
       .pipe(finalize(() => (this.loading = false)))
       .subscribe({
         next: () => this.router.navigate(['/requests']),
-        error: () => (this.error = 'Status change failed.')
+        error: (err) => this.toast.httpError(err, 'Status change failed.')
       });
   }
 

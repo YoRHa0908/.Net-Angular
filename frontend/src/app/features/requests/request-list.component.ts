@@ -1,10 +1,10 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { finalize } from 'rxjs';
 import { RequestItem } from '../../core/request.models';
 import { RequestService } from '../../core/request.service';
+import { ToastService } from '../../core/toast.service';
 
 @Component({
   standalone: true,
@@ -14,11 +14,12 @@ import { RequestService } from '../../core/request.service';
 export class RequestListComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   loading = false;
-  error = '';
+  hasError = false;
   requests: RequestItem[] = [];
   page = 1;
   pageSize = 10;
   totalCount = 0;
+  private requestVersion = 0;
 
   filterForm = this.fb.nonNullable.group({
     status: [''],
@@ -31,6 +32,8 @@ export class RequestListComponent implements OnInit {
   });
 
   constructor(private readonly service: RequestService) {}
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly toast = inject(ToastService);
 
   ngOnInit() {
     this.load();
@@ -38,12 +41,14 @@ export class RequestListComponent implements OnInit {
 
   load() {
     if (this.filterForm.invalid) {
-      this.error = 'Please fix filter input values.';
+      this.hasError = true;
+      this.toast.error('Please fix filter input values.');
       return;
     }
 
     this.loading = true;
-    this.error = '';
+    this.hasError = false;
+    const requestId = ++this.requestVersion;
     const raw = this.filterForm.getRawValue() as Record<string, string | number>;
     const filters: Record<string, string> = {};
     for (const [key, value] of Object.entries(raw)) {
@@ -59,15 +64,23 @@ export class RequestListComponent implements OnInit {
       }
     }
     this.service.getAll(filters)
-      .pipe(finalize(() => (this.loading = false)))
       .subscribe({
         next: data => {
+          if (requestId !== this.requestVersion) return;
           this.requests = data.items;
           this.page = data.page;
           this.pageSize = data.pageSize;
           this.totalCount = data.totalCount;
+          this.loading = false;
+          this.cdr.detectChanges();
         },
-        error: () => (this.error = 'Failed to load requests.')
+        error: () => {
+          if (requestId !== this.requestVersion) return;
+          this.hasError = true;
+          this.toast.error('Failed to load requests.');
+          this.loading = false;
+          this.cdr.detectChanges();
+        }
       });
   }
 
