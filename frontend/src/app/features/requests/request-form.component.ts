@@ -50,12 +50,16 @@ export class RequestFormComponent implements OnInit {
             // date input expects local format: yyyy-MM-dd
             deadline: this.toLocalDateInputValue((x as any).deadline)
           });
+          if (this.isOverdueLocked) {
+            this.form.disable({ emitEvent: false });
+          }
         },
         error: (err) => this.toast.httpError(err, 'Cannot load request.')
       });
   }
 
   save() {
+    if (this.isOverdueLocked) return;
     if (this.form.invalid) return;
     this.loading = true;
     const raw = this.form.getRawValue();
@@ -76,7 +80,7 @@ export class RequestFormComponent implements OnInit {
   }
 
   setStatus(status: RequestStatus) {
-    if (!this.id) return;
+    if (!this.id || this.isOverdueLocked) return;
     this.loading = true;
     this.service.changeStatus(this.id, status)
       .pipe(finalize(() => (this.loading = false)))
@@ -119,6 +123,15 @@ export class RequestFormComponent implements OnInit {
 
   get isManager() {
     return this.auth.isManager();
+  }
+
+  get isOverdueLocked(): boolean {
+    return !!this.id && this.currentStatus === 'Overdue';
+  }
+
+  /** Matches server policy: only Open → Cancelled and InProgress → Cancelled (not Overdue, etc.). */
+  get canCancelFromCurrentStatus(): boolean {
+    return this.currentStatus === 'Open' || this.currentStatus === 'InProgress';
   }
 
   deleteRequest() {

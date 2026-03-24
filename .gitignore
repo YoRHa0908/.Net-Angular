@@ -1,0 +1,20 @@
+# .NET build output
+**/bin/
+**/obj/
+*.user
+*.suo
+.vs/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+
+# Logs and OS
+*.log
+.DS_Store
+Thumbs.db
+
+# Secrets (keep appsettings templates; ignore local overrides)
+**/appsettings.*.local.json
+**/secrets.json
