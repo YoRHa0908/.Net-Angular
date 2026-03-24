@@ -47,8 +47,8 @@ export class RequestFormComponent implements OnInit {
           this.currentStatus = (x as any).status as RequestStatus;
           this.form.patchValue({
             ...(x as any),
-            // datetime-local expects local format: yyyy-MM-ddTHH:mm
-            deadline: this.toLocalDateTimeInputValue((x as any).deadline)
+            // date input expects local format: yyyy-MM-dd
+            deadline: this.toLocalDateInputValue((x as any).deadline)
           });
         },
         error: (err) => this.toast.httpError(err, 'Cannot load request.')
@@ -61,8 +61,8 @@ export class RequestFormComponent implements OnInit {
     const raw = this.form.getRawValue();
     const payload = {
       ...raw,
-      // Convert local datetime-local value to ISO UTC for backend.
-      deadline: new Date(raw.deadline).toISOString()
+      // Date-only UX: persist as end-of-day local time in UTC.
+      deadline: new Date(`${raw.deadline}T23:59:59`).toISOString()
     };
 
     const req$ = this.id
@@ -114,9 +114,15 @@ export class RequestFormComponent implements OnInit {
     return this.auth.role() === 'Manager';
   }
 
-  private toLocalDateTimeInputValue(value: string) {
+  setDeadline(daysFromToday: number) {
+    const d = new Date();
+    d.setDate(d.getDate() + daysFromToday);
+    this.form.patchValue({ deadline: this.toLocalDateInputValue(d.toISOString()) });
+  }
+
+  private toLocalDateInputValue(value: string) {
     const date = new Date(value);
     const pad = (n: number) => String(n).padStart(2, '0');
-    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
   }
 }
