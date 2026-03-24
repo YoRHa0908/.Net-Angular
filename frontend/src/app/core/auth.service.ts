@@ -57,4 +57,34 @@ export class AuthService {
       return null;
     }
   }
+
+  /** Manager/admin: from stored role or JWT role claims (ASP.NET uses long claim type in payload). */
+  isManager(): boolean {
+    const stored = this.role();
+    if (stored && stored.toLowerCase() === 'manager') return true;
+
+    const token = this.token();
+    if (!token) return false;
+
+    const parts = token.split('.');
+    if (parts.length !== 3) return false;
+
+    try {
+      const payloadRaw = atob(parts[1].replace(/-/g, '+').replace(/_/g, '/'));
+      const payload = JSON.parse(payloadRaw) as Record<string, unknown>;
+      const roleClaim =
+        'http://schemas.microsoft.com/ws/2008/06/identity/claims/role';
+      const fromJwt: string[] = [];
+      const push = (v: unknown) => {
+        if (typeof v === 'string') fromJwt.push(v);
+        else if (Array.isArray(v)) v.forEach(x => fromJwt.push(String(x)));
+      };
+      push(payload['role']);
+      push(payload['roles']);
+      push(payload[roleClaim]);
+      return fromJwt.some(r => r.toLowerCase() === 'manager');
+    } catch {
+      return false;
+    }
+  }
 }

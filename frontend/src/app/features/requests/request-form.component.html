@@ -31,13 +31,15 @@
     </div>
   </div>
 
-  <button class="btn btn-primary me-2" [disabled]="loading || form.invalid">
+  <a *ngIf="!id" routerLink="/requests" class="btn btn-outline-secondary me-2">Back</a>
+  <button type="submit" class="btn btn-primary me-2" [disabled]="loading || form.invalid">
     {{ loading ? 'Saving...' : 'Save' }}
   </button>
 
   <ng-container *ngIf="id && isManager">
     <button type="button" class="btn btn-success me-2" (click)="setStatus('Done')">Mark Done</button>
-    <button type="button" class="btn btn-outline-danger" (click)="setStatus('Cancelled')">Cancel</button>
+    <button type="button" class="btn btn-outline-secondary me-2" (click)="setStatus('Cancelled')">Cancel</button>
+    <button type="button" class="btn btn-outline-danger" [disabled]="loading" (click)="deleteRequest()">Delete</button>
   </ng-container>
 </form>
 </div>

@@ -118,12 +118,17 @@ h3 {
 
 .row-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
   justify-content: flex-end;
   align-items: center;
-  min-width: 190px;
+  min-width: 220px;
   width: 100%;
   padding-right: 0.5rem;
+}
+
+.row-actions .btn {
+  flex-shrink: 0;
 }
 
 .title-cell {
@@ -144,7 +149,7 @@ h3 {
 .request-table .col-priority { width: 12%; }
 .request-table .col-deadline { width: 17%; }
 .request-table .col-user { width: 12%; }
-.request-table .col-actions { width: 14%; }
+.request-table .col-actions { width: 18%; }
 
 .filter-row .form-control,
 .filter-row .form-select {

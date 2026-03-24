@@ -156,7 +156,7 @@ export class RequestListComponent implements OnInit {
   }
 
   get isManager() {
-    return this.auth.role() === 'Manager';
+    return this.auth.isManager();
   }
 
   truncateTitle(value: string, max = 24) {

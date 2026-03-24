@@ -46,10 +46,10 @@
       Use letters, numbers, spaces, dash or underscore only.
     </small>
   </div>
-  <div class="col-12 col-lg-2">
-    <div class="d-grid gap-2 d-lg-flex justify-content-lg-end">
-      <button class="btn btn-outline-primary flex-fill" [disabled]="loading || filterForm.invalid">Apply</button>
-      <button type="button" class="btn btn-outline-secondary flex-fill" [disabled]="loading" (click)="resetFilters()">Reset</button>
+  <div class="col-12 col-lg">
+    <div class="d-flex justify-content-end align-items-start gap-2 flex-wrap filter-row-actions">
+      <button type="submit" class="btn btn-outline-primary" [disabled]="loading || filterForm.invalid">Apply</button>
+      <button type="button" class="btn btn-outline-secondary" [disabled]="loading" (click)="resetFilters()">Reset</button>
     </div>
   </div>
 </form>

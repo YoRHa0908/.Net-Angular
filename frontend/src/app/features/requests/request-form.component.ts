@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { RequestService } from '../../core/request.service';
 import { RequestStatus } from '../../core/request.models';
@@ -10,7 +10,7 @@ import { AuthService } from '../../core/auth.service';
 
 @Component({
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './request-form.component.html'
 })
 export class RequestFormComponent implements OnInit {
@@ -118,7 +118,22 @@ export class RequestFormComponent implements OnInit {
   }
 
   get isManager() {
-    return this.auth.role() === 'Manager';
+    return this.auth.isManager();
+  }
+
+  deleteRequest() {
+    if (!this.id || !this.isManager) return;
+    if (!window.confirm('Delete this request permanently?')) return;
+    this.loading = true;
+    this.service.delete(this.id)
+      .pipe(finalize(() => (this.loading = false)))
+      .subscribe({
+        next: () => {
+          this.toast.success('Request deleted.');
+          this.router.navigate(['/requests']);
+        },
+        error: (err) => this.toast.httpError(err, 'Failed to delete request.')
+      });
   }
 
   private toLocalDateInputValue(value: string) {
