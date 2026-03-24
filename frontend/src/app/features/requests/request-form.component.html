@@ -1,0 +1,45 @@
+<h3>{{ id ? 'Edit Request' : 'Create Request' }}</h3>
+
+<form [formGroup]="form" (ngSubmit)="save()">
+  <div class="mb-3">
+    <label class="form-label">Title</label>
+    <input class="form-control" formControlName="title" />
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Description</label>
+    <textarea class="form-control" rows="4" formControlName="description"></textarea>
+  </div>
+  <div class="row">
+    <div class="col-md-4 mb-3">
+      <label class="form-label">Priority</label>
+      <select class="form-select" formControlName="priority">
+        <option>Low</option>
+        <option>Medium</option>
+        <option>High</option>
+      </select>
+    </div>
+    <div class="col-md-4 mb-3">
+      <label class="form-label">Status</label>
+      <select class="form-select" formControlName="status">
+        <option>Draft</option>
+        <option>Open</option>
+        <option>InProgress</option>
+      </select>
+    </div>
+    <div class="col-md-4 mb-3">
+      <label class="form-label">Deadline</label>
+      <input class="form-control" type="datetime-local" formControlName="deadline" />
+    </div>
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+
+  <button class="btn btn-primary me-2" [disabled]="loading || form.invalid">
+    {{ loading ? 'Saving...' : 'Save' }}
+  </button>
+
+  <ng-container *ngIf="id">
+    <button type="button" class="btn btn-success me-2" (click)="setStatus('Done')">Mark Done</button>
+    <button type="button" class="btn btn-outline-danger" (click)="setStatus('Cancelled')">Cancel</button>
+  </ng-container>
+</form>

@@ -1,0 +1,64 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3>Requests</h3>
+  <a class="btn btn-primary" routerLink="/requests/new">Create Request</a>
+</div>
+
+<form class="row g-2 mb-3" [formGroup]="filterForm" (ngSubmit)="load()">
+  <div class="col-md-3">
+    <select class="form-select" formControlName="status">
+      <option value="">All statuses</option>
+      <option>Draft</option>
+      <option>Open</option>
+      <option>InProgress</option>
+      <option>Done</option>
+      <option>Overdue</option>
+      <option>Cancelled</option>
+    </select>
+  </div>
+  <div class="col-md-3">
+    <select class="form-select" formControlName="priority">
+      <option value="">All priorities</option>
+      <option>Low</option>
+      <option>Medium</option>
+      <option>High</option>
+    </select>
+  </div>
+  <div class="col-md-4">
+    <input class="form-control" formControlName="titleSearch" placeholder="Search title" />
+  </div>
+  <div class="col-md-2">
+    <button class="btn btn-outline-primary w-100" [disabled]="loading">Apply</button>
+  </div>
+</form>
+
+<div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+<div *ngIf="loading" class="alert alert-info">Loading...</div>
+
+<table class="table table-striped" *ngIf="!loading">
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Status</th>
+      <th>Priority</th>
+      <th>Deadline</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let item of requests">
+      <td>{{ item.title }}</td>
+      <td>{{ item.status }}</td>
+      <td>{{ item.priority }}</td>
+      <td>{{ item.deadline | date:'short' }}</td>
+      <td><a [routerLink]="['/requests', item.id]" class="btn btn-sm btn-outline-secondary">Open</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="d-flex justify-content-between align-items-center mt-3">
+  <small>Showing page {{ page }} / {{ totalPages }} ({{ totalCount }} total)</small>
+  <div class="btn-group">
+    <button class="btn btn-outline-secondary btn-sm" (click)="previousPage()" [disabled]="page <= 1 || loading">Prev</button>
+    <button class="btn btn-outline-secondary btn-sm" (click)="nextPage()" [disabled]="page * pageSize >= totalCount || loading">Next</button>
+  </div>
+</div>
