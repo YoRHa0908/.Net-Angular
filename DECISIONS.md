@@ -24,8 +24,8 @@
 **Why:** Auditable timeline and supports requirement for status change history.  
 **Alternatives considered:** JSON history blob in request table, event store.
 
-## 5) Hangfire recurring job for overdue transitions
+## 5) Hangfire for overdue detection and strict overdue handling
 
-**Decision:** Use Hangfire recurring job every 5 minutes to mark overdue requests.  
-**Why:** Reliable and easy background processing integrated with ASP.NET Core.  
-**Alternatives considered:** HostedService timer, database scheduler (pg_cron), external worker.
+**Decision:** Use a Hangfire recurring job (PostgreSQL storage, cron every 5 minutes) to mark unfinished past-deadline requests as `Overdue`, and block further edits while `Overdue` (`400` on `PUT` / manager `POST …/status`, read-only form in the Angular app).  
+**Why:** Background work stays reliable and observable inside the API process; once overdue, the lifecycle is explicit instead of allowing silent “fix-ups” without a defined recovery path.  
+**Alternatives considered:** `IHostedService` timer, database scheduler (pg_cron), external worker; allowing deadline extension via `PUT` to auto-return to `Draft` (rejected in favor of the strict lock).

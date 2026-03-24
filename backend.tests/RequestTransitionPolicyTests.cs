@@ -16,6 +16,7 @@ public class RequestTransitionPolicyTests
     [InlineData(RequestStatus.Open, RequestStatus.Cancelled, false, false)]
     [InlineData(RequestStatus.Open, RequestStatus.Cancelled, true, true)]
     [InlineData(RequestStatus.Done, RequestStatus.Open, true, false)]
+    [InlineData(RequestStatus.Open, RequestStatus.Overdue, true, false)]
     public void CanTransition_UsesConfiguredRules(
         RequestStatus from,
         RequestStatus to,

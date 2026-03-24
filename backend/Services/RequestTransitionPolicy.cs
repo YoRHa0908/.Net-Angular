@@ -15,7 +15,6 @@ public class RequestTransitionPolicy : IRequestTransitionPolicy
             (RequestStatus.InProgress, RequestStatus.Done) => isManager,
             (RequestStatus.Open, RequestStatus.Cancelled) => isManager,
             (RequestStatus.InProgress, RequestStatus.Cancelled) => isManager,
-            (_, RequestStatus.Overdue) => true, // system job path
             _ => false
         };
     }
