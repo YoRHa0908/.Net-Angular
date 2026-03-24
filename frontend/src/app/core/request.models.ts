@@ -11,6 +11,7 @@ export interface RequestItem {
   createdAt: string;
   updatedAt: string;
   createdByUserId: string;
+  createdByUserEmail?: string;
 }
 
 export interface RequestStatusHistory {
@@ -28,4 +29,9 @@ export interface PagedResult<T> {
   page: number;
   pageSize: number;
   totalCount: number;
+}
+
+export interface RequestUserLookup {
+  id: string;
+  email: string;
 }

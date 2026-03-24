@@ -1,10 +1,10 @@
-<div class="app-card p-3 p-md-4">
+<div class="app-card requests-shell p-3 p-md-4">
 <div class="d-flex justify-content-between align-items-center mb-3">
-  <h3>Requests</h3>
-  <a class="btn btn-primary" routerLink="/requests/new">Create Request</a>
+  <h3 class="mb-0">Requests</h3>
+  <a class="btn btn-primary px-3" routerLink="/requests/new">Create Request</a>
 </div>
 
-<form class="row g-2 mb-3 align-items-start" [formGroup]="filterForm" (ngSubmit)="applyFilters()">
+<form class="row g-2 mb-3 align-items-start filter-row" [formGroup]="filterForm" (ngSubmit)="applyFilters()">
   <div class="col-12 col-md-6 col-lg-2">
     <select class="form-select" formControlName="status">
       <option value="">All statuses</option>
@@ -30,6 +30,13 @@
   <div class="col-12 col-md-6 col-lg-2">
     <input class="form-control" type="date" formControlName="deadlineTo" />
   </div>
+  <div class="col-12 col-lg-2" *ngIf="isManager">
+    <select class="form-select" formControlName="createdByUserId">
+      <option value="">All users</option>
+      <option value="__me">My requests</option>
+      <option *ngFor="let user of users" [value]="user.id">{{ user.email }}</option>
+    </select>
+  </div>
   <div class="col-12 col-lg-2">
     <input class="form-control" formControlName="titleSearch" placeholder="Search title" />
     <small class="text-danger" *ngIf="titleSearchControl.touched && titleSearchControl.errors?.['maxlength']">
@@ -52,13 +59,15 @@
   No results found. Try changing filters.
 </div>
 
-<table class="table" *ngIf="!loading && requests.length > 0">
+<div class="table-responsive" *ngIf="!loading && requests.length > 0">
+<table class="table request-table">
   <thead>
     <tr>
       <th>Title</th>
       <th>Status</th>
       <th>Priority</th>
       <th>Deadline</th>
+      <th *ngIf="isManager">Created By</th>
       <th class="text-end pe-3">Actions</th>
     </tr>
   </thead>
@@ -68,15 +77,17 @@
       <td>{{ item.status }}</td>
       <td>{{ item.priority }}</td>
       <td>{{ item.deadline | date:'short' }}</td>
+      <td *ngIf="isManager">{{ item.createdByUserEmail || item.createdByUserId }}</td>
       <td class="row-actions">
         <a [routerLink]="['/requests', item.id]" class="btn btn-sm btn-outline-secondary">Open</a>
-        <button type="button" class="btn btn-sm btn-outline-danger" (click)="deleteRequest(item.id)">Delete</button>
+        <button *ngIf="isManager" type="button" class="btn btn-sm btn-outline-danger" (click)="deleteRequest(item.id)">Delete</button>
       </td>
     </tr>
   </tbody>
 </table>
+</div>
 
-<div class="d-flex justify-content-between align-items-center mt-3">
+<div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
   <small>Showing page {{ page }} / {{ totalPages }} ({{ totalCount }} total)</small>
   <div class="btn-group">
     <button class="btn btn-outline-secondary btn-sm" (click)="previousPage()" [disabled]="page <= 1 || loading">Prev</button>

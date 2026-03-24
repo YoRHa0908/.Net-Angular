@@ -21,7 +21,7 @@
     </div>
     <div class="col-md-4 mb-3">
       <label class="form-label">Status</label>
-      <select class="form-select" formControlName="status">
+      <select class="form-select" formControlName="status" [disabled]="!isManager">
         <option *ngFor="let status of statusOptions" [value]="status">{{ status }}</option>
       </select>
     </div>
@@ -35,9 +35,9 @@
     {{ loading ? 'Saving...' : 'Save' }}
   </button>
 
-  <ng-container *ngIf="id">
-    <button type="button" class="btn btn-success me-2" (click)="setStatus('Done')" [disabled]="!isManager">Mark Done</button>
-    <button type="button" class="btn btn-outline-danger" (click)="setStatus('Cancelled')" [disabled]="!isManager">Cancel</button>
+  <ng-container *ngIf="id && isManager">
+    <button type="button" class="btn btn-success me-2" (click)="setStatus('Done')">Mark Done</button>
+    <button type="button" class="btn btn-outline-danger" (click)="setStatus('Cancelled')">Cancel</button>
   </ng-container>
 </form>
 </div>

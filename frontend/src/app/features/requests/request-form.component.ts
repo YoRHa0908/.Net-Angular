@@ -88,10 +88,17 @@ export class RequestFormComponent implements OnInit {
 
   get statusOptions(): RequestStatus[] {
     if (!this.id) {
+      if (!this.isManager) {
+        return ['Draft'];
+      }
       return ['Draft', 'Open', 'InProgress', 'Done', 'Overdue', 'Cancelled'];
     }
 
-    const isManager = this.auth.role() === 'Manager';
+    if (!this.isManager) {
+      return [this.currentStatus];
+    }
+
+    const isManager = this.isManager;
     const from = this.currentStatus;
     const options = new Set<RequestStatus>([from]);
 

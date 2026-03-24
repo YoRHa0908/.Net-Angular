@@ -44,6 +44,10 @@ body {
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
 }
 
+.requests-shell {
+  border-top: 4px solid #4f46e5;
+}
+
 h3 {
   font-weight: 700;
   letter-spacing: 0.2px;
@@ -83,15 +87,23 @@ h3 {
   margin-bottom: 0;
 }
 
+.request-table {
+  min-width: 780px;
+}
+
 .table thead th {
-  background: #f1f5ff;
+  background: linear-gradient(180deg, #eef2ff, #e8eeff);
   color: #312e81;
-  border-bottom: 0;
+  border-bottom: 1px solid #dbe4ff;
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.2px;
 }
 
 .table tbody tr {
   vertical-align: middle;
   border-top: 1px solid #edf1f7;
+  transition: background-color 0.15s ease;
 }
 
 .table tbody tr:nth-child(odd) {
@@ -109,6 +121,16 @@ h3 {
   align-items: center;
   min-width: 160px;
   width: 100%;
+}
+
+.filter-row .form-control,
+.filter-row .form-select {
+  min-height: 40px;
+}
+
+.filter-row .btn {
+  min-height: 40px;
+  white-space: nowrap;
 }
 
 .alert {

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { PagedResult, RequestItem, RequestStatus, RequestStatusHistory } from './request.models';
+import { PagedResult, RequestItem, RequestStatus, RequestStatusHistory, RequestUserLookup } from './request.models';
 
 @Injectable({ providedIn: 'root' })
 export class RequestService {
@@ -35,5 +35,9 @@ export class RequestService {
 
   delete(id: string) {
     return this.http.delete(`${this.api}/${id}`);
+  }
+
+  getUsers() {
+    return this.http.get<RequestUserLookup[]>(`${this.api}/users`);
   }
 }

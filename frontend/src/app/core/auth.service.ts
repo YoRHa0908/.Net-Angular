@@ -41,4 +41,20 @@ export class AuthService {
     this.role.set(res.role);
     this.email.set(res.email);
   }
+
+  getUserId(): string | null {
+    const token = this.token();
+    if (!token) return null;
+
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+
+    try {
+      const payloadRaw = atob(parts[1].replace(/-/g, '+').replace(/_/g, '/'));
+      const payload = JSON.parse(payloadRaw) as { sub?: string; nameid?: string };
+      return payload.sub ?? payload.nameid ?? null;
+    } catch {
+      return null;
+    }
+  }
 }

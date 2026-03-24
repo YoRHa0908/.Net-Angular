@@ -2,9 +2,10 @@ import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { RequestItem } from '../../core/request.models';
+import { RequestItem, RequestUserLookup } from '../../core/request.models';
 import { RequestService } from '../../core/request.service';
 import { ToastService } from '../../core/toast.service';
+import { AuthService } from '../../core/auth.service';
 
 @Component({
   standalone: true,
@@ -16,6 +17,7 @@ export class RequestListComponent implements OnInit {
   loading = false;
   hasError = false;
   requests: RequestItem[] = [];
+  users: RequestUserLookup[] = [];
   page = 1;
   pageSize = 10;
   totalCount = 0;
@@ -26,6 +28,7 @@ export class RequestListComponent implements OnInit {
     priority: [''],
     deadlineFrom: [''],
     deadlineTo: [''],
+    createdByUserId: [''],
     titleSearch: ['', [Validators.maxLength(100), Validators.pattern(/^[a-zA-Z0-9\s\-_]*$/)]],
     page: [1],
     pageSize: [10]
@@ -34,8 +37,15 @@ export class RequestListComponent implements OnInit {
   constructor(private readonly service: RequestService) {}
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly toast = inject(ToastService);
+  private readonly auth = inject(AuthService);
 
   ngOnInit() {
+    if (this.isManager) {
+      this.service.getUsers().subscribe({
+        next: users => (this.users = users),
+        error: (err) => this.toast.httpError(err, 'Failed to load users.')
+      });
+    }
     this.load();
   }
 
@@ -58,6 +68,11 @@ export class RequestListComponent implements OnInit {
           filters[key] = new Date(`${text}T00:00:00`).toISOString();
         } else if (key === 'deadlineTo') {
           filters[key] = new Date(`${text}T23:59:59.999`).toISOString();
+        } else if (key === 'createdByUserId' && text === '__me') {
+          const me = this.auth.getUserId();
+          if (me) {
+            filters[key] = me;
+          }
         } else {
           filters[key] = text;
         }
@@ -95,6 +110,7 @@ export class RequestListComponent implements OnInit {
       priority: '',
       deadlineFrom: '',
       deadlineTo: '',
+      createdByUserId: '',
       titleSearch: '',
       page: 1,
       pageSize: this.pageSize
@@ -137,5 +153,9 @@ export class RequestListComponent implements OnInit {
 
   get titleSearchControl() {
     return this.filterForm.controls.titleSearch;
+  }
+
+  get isManager() {
+    return this.auth.role() === 'Manager';
   }
 }
