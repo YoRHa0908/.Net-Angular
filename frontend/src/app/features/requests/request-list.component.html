@@ -38,8 +38,9 @@
       Use letters, numbers, spaces, dash or underscore only.
     </small>
   </div>
-  <div class="col-md-1">
-    <button class="btn btn-outline-primary w-100" [disabled]="loading || filterForm.invalid">Apply</button>
+  <div class="col-md-1 d-flex gap-2">
+    <button class="btn btn-outline-primary" [disabled]="loading || filterForm.invalid">Apply</button>
+    <button type="button" class="btn btn-outline-secondary" [disabled]="loading" (click)="resetFilters()">Reset</button>
   </div>
 </form>
 

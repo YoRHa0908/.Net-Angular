@@ -6,6 +6,7 @@ import { finalize } from 'rxjs';
 import { RequestService } from '../../core/request.service';
 import { RequestStatus } from '../../core/request.models';
 import { ToastService } from '../../core/toast.service';
+import { AuthService } from '../../core/auth.service';
 
 @Component({
   standalone: true,
@@ -16,6 +17,7 @@ export class RequestFormComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   id: string | null = null;
   loading = false;
+  currentStatus: RequestStatus = 'Draft';
 
   form = this.fb.nonNullable.group({
     title: ['', [Validators.required, Validators.maxLength(200)]],
@@ -29,7 +31,8 @@ export class RequestFormComponent implements OnInit {
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     private readonly service: RequestService,
-    private readonly toast: ToastService
+    private readonly toast: ToastService,
+    private readonly auth: AuthService
   ) {}
 
   ngOnInit() {
@@ -41,6 +44,7 @@ export class RequestFormComponent implements OnInit {
       .pipe(finalize(() => (this.loading = false)))
       .subscribe({
         next: x => {
+          this.currentStatus = (x as any).status as RequestStatus;
           this.form.patchValue({
             ...(x as any),
             // datetime-local expects local format: yyyy-MM-ddTHH:mm
@@ -80,6 +84,34 @@ export class RequestFormComponent implements OnInit {
         next: () => this.router.navigate(['/requests']),
         error: (err) => this.toast.httpError(err, 'Status change failed.')
       });
+  }
+
+  get statusOptions(): RequestStatus[] {
+    if (!this.id) {
+      return ['Draft', 'Open', 'InProgress', 'Done', 'Overdue', 'Cancelled'];
+    }
+
+    const isManager = this.auth.role() === 'Manager';
+    const from = this.currentStatus;
+    const options = new Set<RequestStatus>([from]);
+
+    if (from === 'Draft') options.add('Open');
+    if (from === 'Open') {
+      options.add('InProgress');
+      if (isManager) options.add('Cancelled');
+    }
+    if (from === 'InProgress') {
+      if (isManager) {
+        options.add('Done');
+        options.add('Cancelled');
+      }
+    }
+
+    return [...options];
+  }
+
+  get isManager() {
+    return this.auth.role() === 'Manager';
   }
 
   private toLocalDateTimeInputValue(value: string) {

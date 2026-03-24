@@ -89,6 +89,19 @@ export class RequestListComponent implements OnInit {
     this.load();
   }
 
+  resetFilters() {
+    this.filterForm.reset({
+      status: '',
+      priority: '',
+      deadlineFrom: '',
+      deadlineTo: '',
+      titleSearch: '',
+      page: 1,
+      pageSize: this.pageSize
+    });
+    this.applyFilters();
+  }
+
   nextPage() {
     if (this.page * this.pageSize >= this.totalCount) return;
     this.filterForm.patchValue({ page: this.page + 1 });
