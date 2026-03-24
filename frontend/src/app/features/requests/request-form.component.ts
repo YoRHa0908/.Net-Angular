@@ -39,7 +39,13 @@ export class RequestFormComponent implements OnInit {
     this.service.getById(this.id)
       .pipe(finalize(() => (this.loading = false)))
       .subscribe({
-        next: x => this.form.patchValue(x as any),
+        next: x => {
+          this.form.patchValue({
+            ...(x as any),
+            // datetime-local expects local format: yyyy-MM-ddTHH:mm
+            deadline: this.toLocalDateTimeInputValue((x as any).deadline)
+          });
+        },
         error: () => (this.error = 'Cannot load request.')
       });
   }
@@ -47,7 +53,12 @@ export class RequestFormComponent implements OnInit {
   save() {
     if (this.form.invalid) return;
     this.loading = true;
-    const payload = this.form.getRawValue();
+    const raw = this.form.getRawValue();
+    const payload = {
+      ...raw,
+      // Convert local datetime-local value to ISO UTC for backend.
+      deadline: new Date(raw.deadline).toISOString()
+    };
 
     const req$ = this.id
       ? this.service.update(this.id, payload as any)
@@ -68,5 +79,11 @@ export class RequestFormComponent implements OnInit {
         next: () => this.router.navigate(['/requests']),
         error: () => (this.error = 'Status change failed.')
       });
+  }
+
+  private toLocalDateTimeInputValue(value: string) {
+    const date = new Date(value);
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
   }
 }
